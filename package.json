@@ -1,0 +1,34 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Beefboard backend server",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/beefboard/server.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/beefboard/server/issues"
+  },
+  "homepage": "https://gitlab.com/beefboard/server#readme",
+  "devDependencies": {
+    "@types/jest": "^23.3.5",
+    "@types/node": "^10.11.7",
+    "@types/restify": "^7.2.5",
+    "install": "^0.12.2",
+    "jest": "^23.6.0",
+    "npm": "^6.4.1",
+    "ts-jest": "^23.10.4",
+    "tslint": "^5.11.0",
+    "tslint-config-airbnb": "^5.11.0",
+    "typescript": "^3.1.3"
+  },
+  "dependencies": {
+    "restify": "^7.2.1"
+  }
+}
