@@ -8,10 +8,11 @@ The backend for beefboard
 
 - User login
 - Make post including photos
-- Posts required admin approval
+- Posts require admin approval
 - Posts displayed in chronological order
 - Posts can be up/downvoted
 - Admin can pin posts to top
 
 ## Development
 Development is done with typescript, TinkerPop3.
+
