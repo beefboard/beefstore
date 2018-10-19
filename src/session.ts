@@ -10,3 +10,23 @@ export async function decoder(req: Request, res: Response, next: NextFunction) {
 
   next();
 }
+
+export async function guard(req: Request, res: Response, next: NextFunction) {
+  if (req.session && req.session.username) {
+    next();
+  }
+
+  res.status(401).send({
+    error: 'Unauthorised'
+  });
+}
+
+export async function adminGuard(req: Request, res: Response, next: NextFunction) {
+  if (req.session && req.session.admin) {
+    next();
+  }
+
+  res.status(403).send({
+    error: 'Forbidden'
+  });
+}

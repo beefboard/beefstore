@@ -8,6 +8,7 @@ export async function create(author: string, title: string, content: string): Pr
     id: id,
     title: title,
     content: content,
+    approved: false,
     date: new Date()
   };
   await db.storePost(post);
@@ -16,4 +17,12 @@ export async function create(author: string, title: string, content: string): Pr
 
 export async function get(id: string) {
   return await db.getPost(id);
+}
+
+export async function getAll() {
+  return await db.getPosts();
+}
+
+export async function clear() {
+  return await db.clearPosts();
 }

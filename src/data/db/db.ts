@@ -26,6 +26,7 @@ export interface Post {
   author: string;
   title: string;
   content: string;
+  approved: boolean;
   date: Date;
   imageId?: string;
 }
@@ -72,18 +73,32 @@ export async function getSession(token: string): Promise<AuthSession | null> {
   return null;
 }
 
-export function storePost(post: Post) {
+export async function storePost(post: Post) {
   if (TEST_MODE) {
     TEST_POSTS.push(post);
   }
 }
 
-export function getPost(id: string) {
+export async function getPost(id: string) {
   if (TEST_MODE) {
     for (const post of TEST_POSTS) {
       if (post.id === id) {
         return post;
       }
     }
+  }
+}
+
+export async function getPosts() {
+  if (TEST_MODE) {
+    return TEST_POSTS;
+  }
+
+  return [];
+}
+
+export function clearPosts() {
+  if (TEST_MODE) {
+    TEST_POSTS.length = 0;
   }
 }
