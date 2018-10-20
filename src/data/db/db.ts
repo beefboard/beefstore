@@ -28,6 +28,7 @@ export interface Post {
   content: string;
   approved: boolean;
   date: Date;
+  pinned: boolean;
   imageId?: string;
 }
 
@@ -101,4 +102,31 @@ export function clearPosts() {
   if (TEST_MODE) {
     TEST_POSTS.length = 0;
   }
+}
+
+export async function setPostApproval(id: string, approved: boolean) {
+  if (TEST_MODE) {
+    const post = await getPost(id);
+    if (!post) {
+      return false;
+    }
+
+    post.approved = approved;
+  }
+
+  return true;
+}
+
+export async function setPinned(id: string, pinned: boolean) {
+  if (TEST_MODE) {
+    const post = await getPost(id);
+
+    if (!post) {
+      return false;
+    }
+
+    post.pinned = pinned;
+  }
+
+  return true;
 }

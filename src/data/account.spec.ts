@@ -1,37 +1,46 @@
 import * as account from './account';
 
-describe('account', () => {
-  it('should refuse invalid credentials', async () => {
+describe('login', () => {
+  it('should refuse invalid passwords', async () => {
     expect.assertions(1);
     const token = await account.login('test', 'fail');
 
-    expect(token).toBe(null);
+    expect(token).not.toBe(expect.anything());
+  });
+
+  it('should refuse invalid accounts', async () => {
+    expect.assertions(1);
+    const token = await account.login('sdfsadf', 'fail');
+
+    expect(token).not.toBe(expect.anything());
   });
 
   it('should create a token for valid credentials', async () => {
     expect.assertions(1);
-    const token = await account.login('test', 'test');
+    const token = (await account.login('test', 'test')) as string;
 
-    expect(token).not.toBe(null);
+    expect(token.length).toBeGreaterThan(0);
   });
 
-  it('should access any case for username', async () => {
+  it('should accept any case for username', async () => {
     expect.assertions(1);
 
-    const token = await account.login('TesT', 'test');
+    const token = await account.login('TesT', 'test') as string;
 
-    expect(token).not.toBe(null);
+    expect(token.length).toBeGreaterThan(0);
   });
+});
 
-  it('should be able to verify valid tokens', async () => {
+describe('session', async () => {
+  it('should return session from token', async () => {
     expect.assertions(1);
-    const token = await account.login('test', 'test');
+    const token = await account.login('test', 'test') as string;
     if (!token) {
       throw Error('Could not get token');
     }
 
     const session = await account.getSession(token);
-    expect(session).not.toBe(null);
+    expect(session).toBeTruthy();
   });
 
   it('should store the username in the session', async () => {

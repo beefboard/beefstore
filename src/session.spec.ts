@@ -29,7 +29,7 @@ describe('decoder', () => {
     } as any;
 
     await session.decoder(req, {} as Response, (() => {
-      expect(req.session).not.toBe(null);
+      expect(req.session).not.toBeNull();
       done();
     }));
   });
@@ -46,7 +46,7 @@ describe('decoder', () => {
     } as any;
 
     await session.decoder(req, {} as Response, () => {
-      expect(req.session).toBe(null);
+      expect(req.session).toBeNull();
       done();
     });
   });

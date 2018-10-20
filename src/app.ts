@@ -1,4 +1,3 @@
-import express from 'express';
 declare global {
   namespace Express {
     interface Request {
@@ -7,6 +6,7 @@ declare global {
   }
 }
 
+import express from 'express';
 import * as session from './session';
 import { AuthSession } from './data/db/db';
 import v1 from './routes/v1';

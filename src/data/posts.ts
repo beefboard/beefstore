@@ -9,6 +9,7 @@ export async function create(author: string, title: string, content: string): Pr
     title: title,
     content: content,
     approved: false,
+    pinned: false,
     date: new Date()
   };
   await db.storePost(post);
@@ -25,4 +26,16 @@ export async function getAll() {
 
 export async function clear() {
   return await db.clearPosts();
+}
+
+export async function approve(id: string): Promise<boolean> {
+  return await db.setPostApproval(id, true);
+}
+
+export async function pin(id: string): Promise<boolean> {
+  return await db.setPinned(id, true);
+}
+
+export async function unpin(id: string): Promise<boolean> {
+  return await db.setPinned(id, false);
 }

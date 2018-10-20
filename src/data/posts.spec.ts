@@ -12,14 +12,28 @@ describe('creation', () => {
   it('should return post id', async () => {
     expect.assertions(1);
     const id = await posts.create('test', 'test title', 'This is the content of the post');
-    expect(id).not.toBe(null);
+    expect(id).not.toBeNull();
   });
 
-  it('should generate different post id\'s', async () => {
+  it('should generate unique post id\'s', async () => {
     expect.assertions(1);
     const id1 = await posts.create('test', 'test title', 'This is the content of the post');
     const id2 = await posts.create('test', 'test title', 'This is the content of the post');
     expect(id1).not.toBe(id2);
+  });
+
+  test('new posts should not be approved', async () => {
+    expect.assertions(1);
+
+    const post = {
+      title: 'test title',
+      author: 'test',
+      content: 'test'
+    };
+    const id = await posts.create(post.author, post.title, post.content);
+    const storedPost = await posts.get(id) as Post;
+
+    expect(storedPost.approved).not.toBeTruthy();
   });
 });
 
@@ -28,7 +42,7 @@ describe('retreival', () => {
     await posts.clear();
   });
 
-  it('should return posts from post id', async () => {
+  it('should return posts by post id', async () => {
     expect.assertions(3);
 
     const post = {
@@ -43,6 +57,13 @@ describe('retreival', () => {
     expect(storedPost.title).toBe(post.title);
     expect(storedPost.author).toBe(post.author);
     expect(storedPost.content).toBe(storedPost.content);
+  });
+
+  it('should return null for non existent posts', async () => {
+    expect.assertions(1);
+
+    const post = await posts.get('bad-token');
+    expect(post).toBeFalsy();
   });
 
   it('should return creation date of posts', async () => {
@@ -82,7 +103,8 @@ describe('approval', () => {
   beforeEach(async () => {
     await posts.clear();
   });
-  it('new posts should not be approved', async () => {
+
+  it('should allow new posts to be approved', async () => {
     expect.assertions(1);
 
     const post = {
@@ -91,8 +113,72 @@ describe('approval', () => {
       content: 'test'
     };
     const id = await posts.create(post.author, post.title, post.content);
-    const storedPost = await posts.get(id) as Post;
+    await posts.approve(id);
 
-    expect(storedPost.approved).not.toBeTruthy();
+    const storedPost = await posts.get(id) as Post;
+    expect(storedPost.approved).toBeTruthy();
+  });
+
+  it('should return false for invalid posts', async () => {
+    expect.assertions(1);
+
+    const successful = await posts.approve('asdfjasdf');
+
+    expect(successful).toBeFalsy();
+  });
+
+});
+
+describe('pinning', async () => {
+  test('posts should not be pinned by default', async () => {
+    expect.assertions(1);
+
+    const post = {
+      title: 'test title',
+      author: 'test',
+      content: 'test'
+    };
+    const id = await posts.create(post.author, post.title, post.content);
+
+    const storedPost = await posts.get(id) as Post;
+    expect(storedPost.pinned).toBeFalsy();
+  });
+
+  it('should allow posts to be pinned', async () => {
+    expect.assertions(1);
+
+    const post = {
+      title: 'test title',
+      author: 'test',
+      content: 'test'
+    };
+    const id = await posts.create(post.author, post.title, post.content);
+    await posts.pin(id);
+
+    const storedPost = await posts.get(id) as Post;
+    expect(storedPost.pinned).toBeTruthy();
+  });
+
+  it('should allow posts to be unpinned', async () => {
+    expect.assertions(1);
+
+    const post = {
+      title: 'test title',
+      author: 'test',
+      content: 'test'
+    };
+    const id = await posts.create(post.author, post.title, post.content);
+    await posts.pin(id);
+    await posts.unpin(id);
+
+    const storedPost = await posts.get(id) as Post;
+    expect(storedPost.pinned).toBeFalsy();
+  });
+
+  it('should return false for invalid posts', async () => {
+    expect.assertions(1);
+
+    const response = await posts.pin('test-test');
+    expect(response).toBeFalsy();
   });
 });
