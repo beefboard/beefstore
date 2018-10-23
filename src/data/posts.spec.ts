@@ -1,14 +1,11 @@
 import * as posts from './posts';
 import { Post } from './db/db';
 
-describe('creation', () => {
-  /**
-   * remove all posts when every test runs
-   */
-  beforeEach(async () => {
-    await posts.clear();
-  });
+beforeEach(async () => {
+  await posts.clear();
+});
 
+describe('creation', () => {
   it('should return post id', async () => {
     expect.assertions(1);
     const id = await posts.create('test', 'test title', 'This is the content of the post');
@@ -21,27 +18,9 @@ describe('creation', () => {
     const id2 = await posts.create('test', 'test title', 'This is the content of the post');
     expect(id1).not.toBe(id2);
   });
-
-  test('new posts should not be approved', async () => {
-    expect.assertions(1);
-
-    const post = {
-      title: 'test title',
-      author: 'test',
-      content: 'test'
-    };
-    const id = await posts.create(post.author, post.title, post.content);
-    const storedPost = await posts.get(id) as Post;
-
-    expect(storedPost.approved).not.toBeTruthy();
-  });
 });
 
 describe('retreival', () => {
-  beforeEach(async () => {
-    await posts.clear();
-  });
-
   it('should return posts by post id', async () => {
     expect.assertions(3);
 
@@ -77,7 +56,14 @@ describe('retreival', () => {
     const id = await posts.create(post.author, post.title, post.content);
 
     const storedPost = await posts.get(id) as Post;
-    expect(storedPost.date.getDate()).toBe(new Date().getDate());
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const storedPostDay = new Date(storedPost.date);
+    storedPostDay.setHours(0, 0, 0, 0);
+
+    expect(storedPostDay).toEqual(today);
   });
 
   it('should provide a list of posts', async () => {
@@ -100,8 +86,18 @@ describe('retreival', () => {
 });
 
 describe('approval', () => {
-  beforeEach(async () => {
-    await posts.clear();
+  test('new posts should not be approved', async () => {
+    expect.assertions(1);
+
+    const post = {
+      title: 'test title',
+      author: 'test',
+      content: 'test'
+    };
+    const id = await posts.create(post.author, post.title, post.content);
+    const storedPost = await posts.get(id) as Post;
+
+    expect(storedPost.approved).not.toBeTruthy();
   });
 
   it('should allow new posts to be approved', async () => {
@@ -145,7 +141,7 @@ describe('pinning', async () => {
   });
 
   it('should allow posts to be pinned', async () => {
-    expect.assertions(1);
+    expect.assertions(2);
 
     const post = {
       title: 'test title',
@@ -153,7 +149,9 @@ describe('pinning', async () => {
       content: 'test'
     };
     const id = await posts.create(post.author, post.title, post.content);
-    await posts.pin(id);
+    const exists = await posts.pin(id);
+
+    expect(exists).toBeTruthy();
 
     const storedPost = await posts.get(id) as Post;
     expect(storedPost.pinned).toBeTruthy();
