@@ -8,7 +8,8 @@
     "start": "ts-node src/app.ts",
     "lint": "tslint --project .",
     "watch": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node src/app.ts'",
-    "precommit": "npm run lint && npm test"
+    "precommit": "npm run lint",
+    "prepush": "npm test"
   },
   "repository": {
     "type": "git",
