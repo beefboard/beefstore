@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest --coverage --verbose",
     "start": "ts-node src/app.ts",
-    "watch": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node src/app.ts'"
+    "lint": "tslint --project .",
+    "watch": "nodemon --watch 'src/**/*.ts' --ignore 'src/**/*.spec.ts' --exec 'ts-node src/app.ts'",
+    "pre-commit": "npm lint && npm test"
   },
   "repository": {
     "type": "git",
@@ -26,6 +28,7 @@
     "@types/node": "^10.11.7",
     "@types/uuid": "^3.4.4",
     "@types/uuid-parse": "^1.0.0",
+    "husky": "^1.1.2",
     "install": "^0.12.2",
     "jest": "^23.6.0",
     "nodemon": "^1.18.4",
