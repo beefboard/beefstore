@@ -261,3 +261,5 @@ export async function setPinned(id: string, pinned: boolean) {
           .where('id', convertUuid(id));
   return true;
 }
+
+// test
