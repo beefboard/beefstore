@@ -28,6 +28,15 @@ export async function login(username: string, password: string): Promise<string 
   return null;
 }
 
+export async function register(
+  username: string,
+  password: string,
+  firstName: string,
+  lastName: string,
+  admin: boolean) {
+
+}
+
 export async function getSession(token: string): Promise<db.AuthSession | null> {
   const session = await db.getSession(token);
 

@@ -59,3 +59,26 @@ describe('session', async () => {
     expect(session.username).toBe('test');
   });
 });
+
+describe('registration', () => {
+  it('should allow normal user registration', async () => {
+    expect.assertions(1);
+    const user = {
+      username: 'test1',
+      password: 'test2',
+      firstName: 'test5',
+      lastName: 'test6'
+    };
+    await account.register(
+      user.username,
+      user.password,
+      user.firstName,
+      user.lastName,
+      false
+    );
+
+    const token = await account.login('test1', 'test2');
+
+    expect(token).toBe(expect.anything());
+  });
+});
