@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 declare global {
   namespace Express {
     interface Request {
