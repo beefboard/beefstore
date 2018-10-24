@@ -9,10 +9,6 @@ RUN npm install
 # excludes everything in dockerignore
 COPY . .
 
-# Ensure lint and tests pass
-RUN npm run lint
-RUN npm test
-
 # Build the server
 RUN npm run build
 
