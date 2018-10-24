@@ -90,27 +90,7 @@ async function generatePostsTable() {
   }
 }
 
-export async function initDb() {
-  if (TEST_MODE) {
-    db = knex({
-      client: 'sqlite3',
-      connection: {
-        filename: TEST_SQLITE_FILE,
-      },
-      useNullAsDefault: true,
-      pool: { min: 0, max: 1 }
-    });
-    // await db.schema.dropTableIfExists(TABLE_USERS);
-    // await db.schema.dropTableIfExists(TABLE_SESSIONS);
-  } else {
-    db = knex({
-      client: 'pg',
-      connection: pgConnectionConfig
-    });
-  }
-
-  await generateUsersTable();
-
+export async function generateInitialUsers() {
   if (TEST_MODE) {
     try {
       await db.insert({
@@ -132,6 +112,33 @@ export async function initDb() {
       }).into('users');
     } catch (e) {}
   }
+}
+
+export async function clearUsers() {
+  await db.delete().from(TABLE_USERS);
+}
+
+export async function initDb() {
+  if (TEST_MODE) {
+    db = knex({
+      client: 'sqlite3',
+      connection: {
+        filename: TEST_SQLITE_FILE,
+      },
+      useNullAsDefault: true,
+      pool: { min: 0, max: 1 }
+    });
+    // await db.schema.dropTableIfExists(TABLE_USERS);
+    // await db.schema.dropTableIfExists(TABLE_SESSIONS);
+  } else {
+    db = knex({
+      client: 'pg',
+      connection: pgConnectionConfig
+    });
+  }
+
+  await generateUsersTable();
+  await generateInitialUsers();
   await generateSessionsTable();
   await generatePostsTable();
 }
@@ -152,6 +159,26 @@ export async function getDetails(username: string): Promise<User | null> {
     lastName: detailsRow['lastName'],
     admin: detailsRow['admin']
   };
+}
+
+export async function saveUser(user: User) {
+  if (!db) {
+    await initDb();
+  }
+
+  if (await db.select('username').from(TABLE_USERS).where('username', user.username).first()) {
+    return false;
+  }
+
+  await db.insert({
+    username: user.username,
+    password: user.passwordHash,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    admin: user.admin
+  }).into(TABLE_USERS);
+
+  return true;
 }
 
 export async function storeSession(token: string, username: string, expiration: Date) {

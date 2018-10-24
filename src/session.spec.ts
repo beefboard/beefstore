@@ -1,5 +1,5 @@
 import * as session from './session';
-import * as account from './data/account';
+import * as accounts from './data/accounts';
 
 import { Response } from 'express';
 
@@ -21,7 +21,7 @@ describe('decoder', () => {
   it('should decode session from token in request header', async (done) => {
     expect.assertions(1);
 
-    const token = await account.login('test', 'test');
+    const token = await accounts.login('test', 'test');
     const req = {
       headers: {
         'x-access-token': token

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { guard } from '../../session';
-import * as account from '../../data/account';
+import * as accounts from '../../data/accounts';
 
 const router = Router();
 
@@ -8,7 +8,7 @@ router.put('/', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
-  const token = await account.login(username, password);
+  const token = await accounts.login(username, password);
 
   if (!token) {
     res.status(401).send({

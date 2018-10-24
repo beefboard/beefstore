@@ -1,11 +1,7 @@
 import * as db from './db/db';
-import bcrypt, { hash } from 'bcrypt';
+import bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import moment from 'moment';
-
-async function genHash(password: string) {
-  return bcrypt.hash(password, 10);
-}
 
 /**
  * Login to the account, returning the auth token
@@ -33,14 +29,24 @@ export async function register(
   password: string,
   firstName: string,
   lastName: string,
-  admin: boolean) {
+  admin: boolean): Promise<boolean> {
 
+  const user: db.User = {
+    username: username.toLowerCase(),
+    passwordHash: await bcrypt.hash(password, 10),
+    firstName: firstName,
+    lastName: lastName,
+    admin: admin
+  };
+
+  const success = await db.saveUser(user);
+  return success;
 }
 
 export async function getSession(token: string): Promise<db.AuthSession | null> {
   const session = await db.getSession(token);
 
-  // If the session exists, and the session has not experied extend the session
+  // If the session exists, and the session has not expiered extend the session
   if (session) {
     if (session.expiration > moment().toDate()) {
       const [details , _] = await Promise.all([
@@ -50,7 +56,7 @@ export async function getSession(token: string): Promise<db.AuthSession | null> 
 
       if (details) {
         return {
-          username: details.username,
+          username: details.username.toLowerCase(),
           firstName: details.firstName,
           lastName: details.lastName,
           admin: details.admin
@@ -61,4 +67,9 @@ export async function getSession(token: string): Promise<db.AuthSession | null> 
     }
   }
   return null;
+}
+
+export async function clearUsers() {
+  await db.clearUsers();
+  await db.generateInitialUsers();
 }
