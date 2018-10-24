@@ -23,6 +23,7 @@
   "homepage": "https://gitlab.com/beefboard/server#readme",
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/body-parser": "^1.17.0",
     "@types/express": "^4.16.0",
     "@types/jest": "^23.3.5",
     "@types/knex": "^0.14.26",
@@ -42,6 +43,7 @@
   },
   "dependencies": {
     "bcrypt": "^3.0.1",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "moment": "^2.22.2",

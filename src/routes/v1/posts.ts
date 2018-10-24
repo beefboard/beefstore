@@ -7,7 +7,7 @@ const router = Router();
 router.use(guard);
 router.get('/', async (req, res) => {
   res.send({
-    products: await posts.getAll()
+    posts: await posts.getAll()
   });
 });
 
