@@ -23,6 +23,7 @@
   "homepage": "https://gitlab.com/beefboard/server#readme",
   "devDependencies": {
     "@types/bcrypt": "^3.0.0",
+    "@types/body-parser": "^1.17.0",
     "@types/express": "^4.16.0",
     "@types/jest": "^23.3.5",
     "@types/knex": "^0.14.26",
@@ -34,7 +35,6 @@
     "jest": "^23.6.0",
     "nodemon": "^1.18.4",
     "npm": "^6.4.1",
-    "sqlite": "^3.0.0",
     "ts-jest": "^23.10.4",
     "ts-node": "^7.0.1",
     "tslint": "^5.11.0",
@@ -43,10 +43,12 @@
   },
   "dependencies": {
     "bcrypt": "^3.0.1",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "knex": "^0.15.2",
     "moment": "^2.22.2",
     "pg": "^7.5.0",
+    "sqlite": "^3.0.0",
     "uuid": "^3.3.2",
     "uuid-parse": "^1.0.0"
   }

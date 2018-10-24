@@ -35,9 +35,6 @@ export interface Post {
 const TEST_SQLITE_FILE = './testdb.db';
 const TEST_MODE = process.env.NODE_ENV === 'test';
 
-const TEST_USERNAME = 'test';
-const TEST_PASSWORD = 'test';
-
 const TABLE_USERS = 'users';
 const TABLE_SESSIONS = 'sessions';
 const TABLE_POSTS = 'posts';
@@ -96,11 +93,12 @@ async function generatePostsTable() {
 export async function initDb() {
   if (TEST_MODE) {
     db = knex({
-      client: 'sqlite',
+      client: 'sqlite3',
       connection: {
         filename: TEST_SQLITE_FILE,
       },
-      useNullAsDefault: true
+      useNullAsDefault: true,
+      pool: { min: 0, max: 1 }
     });
     // await db.schema.dropTableIfExists(TABLE_USERS);
     // await db.schema.dropTableIfExists(TABLE_SESSIONS);
@@ -116,10 +114,20 @@ export async function initDb() {
   if (TEST_MODE) {
     try {
       await db.insert({
-        username: TEST_USERNAME,
-        password: await bcrypt.hash(TEST_PASSWORD, 10),
+        username: 'test',
+        password: await bcrypt.hash('test', 10),
         firstName: 'test',
         lastName: 'test',
+        admin: true
+      }).into('users');
+    } catch (e) {}
+  } else {
+    try {
+      await db.insert({
+        username: 'admin',
+        password: await bcrypt.hash('admin', 10),
+        firstName: 'admin',
+        lastName: 'admin',
         admin: true
       }).into('users');
     } catch (e) {}
