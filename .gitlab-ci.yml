@@ -1,39 +1,27 @@
 image: node:10
 
+stages:
+  - test
+  - build
+  - deploy
+
 # This folder is cached between builds
 # http://docs.gitlab.com/ce/ci/yaml/README.html#cache
 cache:
   paths:
   - node_modules/
 
-gen-coverage:
+test:
+  stage: test
   script:
    - npm install
    - npm test
   
-staging:
-  stage: staging
+build:
+  stage: build
   image: docker:latest
   only:
     - "development"
-  services:
-    - docker:dind
-  variables:
-    DOCKER_DRIVER: "overlay"
-  before_script:
-    - docker version
-    - "docker info"
-    - "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
-  script:
-    - "docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:development --pull ."
-    - "docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:development"
-  after_script:
-    - "docker logout ${CI_REGISTRY}"
-
-release:
-  stage: release
-  image: docker:latest
-  only:
     - "master"
   services:
     - docker:dind
@@ -44,7 +32,7 @@ release:
     - "docker info"
     - "docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN $CI_REGISTRY"
   script:
-    - "docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest --pull ."
-    - "docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:latest"
+    - "docker build -t ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME} --pull ."
+    - "docker push ${CI_REGISTRY}/${CI_PROJECT_PATH}:${CI_COMMIT_REF_NAME}"
   after_script:
     - "docker logout ${CI_REGISTRY}"
