@@ -32,7 +32,6 @@ export interface Post {
   pinned: boolean;
 }
 
-const TEST_SQLITE_FILE = './testdb.db';
 const TEST_MODE = process.env.NODE_ENV === 'test';
 
 const TABLE_USERS = 'users';
@@ -123,7 +122,7 @@ export async function initDb() {
     db = knex({
       client: 'sqlite3',
       connection: {
-        filename: TEST_SQLITE_FILE,
+        filename: ':memory:',
       },
       useNullAsDefault: true,
       pool: { min: 0, max: 1 }
