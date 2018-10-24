@@ -96,11 +96,12 @@ async function generatePostsTable() {
 export async function initDb() {
   if (TEST_MODE) {
     db = knex({
-      client: 'sqlite',
+      client: 'sqlite3',
       connection: {
         filename: TEST_SQLITE_FILE,
       },
-      useNullAsDefault: true
+      useNullAsDefault: true,
+      pool: { min: 0, max: 1 }
     });
     // await db.schema.dropTableIfExists(TABLE_USERS);
     // await db.schema.dropTableIfExists(TABLE_SESSIONS);
