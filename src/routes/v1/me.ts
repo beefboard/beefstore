@@ -8,6 +8,12 @@ router.put('/', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
 
+  if (!username || !password) {
+    return res.status(422).send({
+      error: 'username and password must be provided'
+    });
+  }
+
   const token = await accounts.login(username, password);
 
   if (!token) {
