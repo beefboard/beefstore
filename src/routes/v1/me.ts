@@ -35,4 +35,12 @@ router.get('/', async (req, res) => {
   res.send(req.session);
 });
 
+router.delete('/', async (req, res) => {
+  if (req.session) {
+    await accounts.logout(req.session.token);
+  }
+
+  res.send({ success: true });
+});
+
 export default router;

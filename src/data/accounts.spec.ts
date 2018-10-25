@@ -32,6 +32,21 @@ describe('login', () => {
   });
 });
 
+describe('logout', async () => {
+  it('should allow session to be deleted', async () => {
+    expect.assertions(2);
+
+    const token = await accounts.login('test', 'test') as string;
+
+    if (!token) {
+      throw Error('Could not get token');
+    }
+
+    expect(await accounts.logout(token)).toBeTruthy();
+    expect(await accounts.getSession(token)).not.toBe(expect.anything());
+  });
+});
+
 describe('session', async () => {
   it('should return session from token', async () => {
     expect.assertions(1);

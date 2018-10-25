@@ -20,6 +20,7 @@ export interface AuthSession {
   firstName: string;
   lastName: string;
   admin: boolean;
+  token: string;
 }
 
 export interface Post {
@@ -215,6 +216,19 @@ export async function getSession(token: string): Promise<SessionData | null> {
   return null;
 }
 
+export async function removeSession(token: string): Promise<boolean> {
+  return (
+    await db
+      .delete()
+      .from(TABLE_SESSIONS)
+      .where('token', convertUuid(token))
+  ) > 0;
+}
+
+export async function removeSessions(olderThan: Date) {
+  await db.delete().from(TABLE_SESSIONS).where('expiration', '<=', olderThan);
+}
+
 export async function storePost(post: Post) {
   if (!db) {
     await initDb();
@@ -271,14 +285,12 @@ export async function setPostApproval(id: string, approved: boolean) {
     await initDb();
   }
 
-  if (!await getPost(id)) {
-    return false;
-  }
-  await db.update({ approved: approved })
-          .table(TABLE_POSTS)
-          .where('id', convertUuid(id));
-
-  return true;
+  return (
+    await db
+      .update({ approved: approved })
+      .table(TABLE_POSTS)
+      .where('id', convertUuid(id))
+  ) > 0;
 }
 
 export async function setPinned(id: string, pinned: boolean) {
@@ -286,12 +298,10 @@ export async function setPinned(id: string, pinned: boolean) {
     await initDb();
   }
 
-  if (!await getPost(id)) {
-    return false;
-  }
-
-  await db.update({ pinned: pinned })
-          .table(TABLE_POSTS)
-          .where('id', convertUuid(id));
-  return true;
+  return (
+    await db
+      .update({ pinned: pinned })
+      .table(TABLE_POSTS)
+      .where('id', convertUuid(id))
+  ) > 0;
 }

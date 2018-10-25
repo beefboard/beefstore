@@ -59,7 +59,8 @@ export async function getSession(token: string): Promise<db.AuthSession | null> 
           username: details.username.toLowerCase(),
           firstName: details.firstName,
           lastName: details.lastName,
-          admin: details.admin
+          admin: details.admin,
+          token: token
         };
       }
     } else {
@@ -73,3 +74,22 @@ export async function clearUsers() {
   await db.clearUsers();
   await db.generateInitialUsers();
 }
+
+export async function logout(token: string): Promise<boolean> {
+  return await db.removeSession(token);
+}
+/**
+ * Remove expired sessions every 60 seconds
+ */
+async function removeOldSessionLoop() {
+  while (true) {
+    try {
+      await db.removeSessions(new Date());
+    } catch (e) {}
+    await new Promise((resolve) => {
+      setTimeout(resolve, 60000);
+    });
+  }
+}
+
+removeOldSessionLoop();
