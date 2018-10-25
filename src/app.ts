@@ -10,12 +10,14 @@ declare global {
 
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from 'cors';
 import * as session from './session';
 import { AuthSession, initDb } from './data/db/db';
 import v1 from './routes/v1';
 
 const app = express();
 
+app.use(cors());
 app.use(bodyParser.json());
 app.use(session.decoder);
 
