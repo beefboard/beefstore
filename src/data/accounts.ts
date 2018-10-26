@@ -15,8 +15,17 @@ export async function login(username: string, password: string): Promise<string 
 
   if (await bcrypt.compare(password, userDetails.passwordHash)) {
     // The credentials are valid
-    const token = uuid.v1();
-    await db.storeSession(token, username.toLowerCase(), moment().add(2, 'weeks').toDate());
+    let token;
+
+    // Create a token from a v4 uuid, if the uuid exists, try again.
+    while (true) {
+      token = uuid.v4();
+      const exists = await db.getSession(token);
+      if (!exists) {
+        await db.storeSession(token, username.toLowerCase(), moment().add(2, 'weeks').toDate());
+        break;
+      }
+    }
 
     return token;
   }
