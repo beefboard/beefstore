@@ -31,7 +31,7 @@ export async function get(id: string): Promise<db.Post | null> {
 }
 
 export async function getAll(query: PostsQuery): Promise<db.Post[]> {
-  return await db.getPosts(query.approved, query.page);
+  return await db.getPosts(query.approved ? true : false, query.page);
 }
 
 export async function clear() {
