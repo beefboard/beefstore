@@ -1,6 +1,12 @@
 import * as db from './db/db';
 import * as uuid from 'uuid';
 
+export interface PostsQuery {
+  approved: boolean;
+  page?: number;
+  num?: number;
+}
+
 export async function create(author: string, title: string, content: string): Promise<string> {
   const id = uuid.v1();
   const post: db.Post = {
@@ -16,12 +22,16 @@ export async function create(author: string, title: string, content: string): Pr
   return id;
 }
 
-export async function get(id: string) {
+export async function remove(id: string): Promise<boolean> {
+  return await db.removePost(id);
+}
+
+export async function get(id: string): Promise<db.Post | null> {
   return await db.getPost(id);
 }
 
-export async function getAll() {
-  return await db.getPosts();
+export async function getAll(query: PostsQuery): Promise<db.Post[]> {
+  return await db.getPosts(query.approved, query.page);
 }
 
 export async function clear() {

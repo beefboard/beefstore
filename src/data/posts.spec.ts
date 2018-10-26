@@ -77,11 +77,24 @@ describe('retreival', () => {
         author: 'test',
         content: 'test'
       };
-      const id = await posts.create(post.author, post.title, post.content);
+      await posts.create(post.author, post.title, post.content);
     }
 
-    const allPosts = await posts.getAll();
+    const allPosts = await posts.getAll({ approved: false });
     expect(allPosts.length).toBe(numPosts);
+  });
+
+  it('should allow unapproved posts to be filtered', async () => {
+    expect.assertions(2);
+    const postId = await posts.create('test', 'test', 'test');
+
+    const allPosts = await posts.getAll({ approved: true });
+    expect(allPosts.length).toBe(0);
+
+    await posts.approve(postId);
+
+    const allPosts2 = await posts.getAll({ approved: true });
+    expect(allPosts2.length).toBe(1);
   });
 });
 
@@ -178,5 +191,27 @@ describe('pinning', async () => {
 
     const response = await posts.pin('test-test');
     expect(response).toBeFalsy();
+  });
+});
+
+describe('removal', () => {
+  it('should allow posts to be deleted', async () => {
+    expect.assertions(2);
+
+    const postId = await posts.create('test', 'test', 'test');
+    expect(await posts.get(postId)).toBeTruthy();
+    await posts.remove(postId);
+    expect(await posts.get(postId)).toBeFalsy();
+  });
+
+  it('should return true when post exists', async () => {
+    expect.assertions(1);
+    const postId = await posts.create('test', 'test', 'test');
+    expect(await posts.remove(postId)).toBeTruthy();
+  });
+
+  it('should return false when post does not exist', async () => {
+    expect.assertions(1);
+    expect(await posts.remove('testadsfadsf')).toBeFalsy();
   });
 });

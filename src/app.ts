@@ -17,8 +17,14 @@ import v1 from './routes/v1';
 
 const app = express();
 
+// Allow for cross origin requests, as this is
+// an API
 app.use(cors());
+
+// Parse any body
 app.use(bodyParser.json());
+
+// Decode token from session
 app.use(session.decoder);
 
 app.use('/v1', v1);

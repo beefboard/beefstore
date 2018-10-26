@@ -1,6 +1,7 @@
 import knex from 'knex';
 import bcrypt from 'bcrypt';
 import uuidParse from 'uuid-parse';
+import bodyParser = require('body-parser');
 
 export interface User {
   username: string;
@@ -244,6 +245,16 @@ export async function storePost(post: Post) {
   }).into(TABLE_POSTS);
 }
 
+export async function removePost(id: string) {
+  if (!db) {
+    await initDb();
+  }
+
+  return (
+    await db.delete().from(TABLE_POSTS).where('id', convertUuid(id))
+  ) > 0;
+}
+
 export async function getPost(id: string): Promise<Post | null> {
   if (!db) {
     await initDb();
@@ -259,11 +270,12 @@ export async function getPost(id: string): Promise<Post | null> {
   return null;
 }
 
-export async function getPosts() {
+export async function getPosts(approved: boolean, page?: number) {
   if (!db) {
     await initDb();
   }
-  const postsData = await db.select().from(TABLE_POSTS);
+
+  const postsData = await db.select().from(TABLE_POSTS).where('approved', approved);
 
   for (const postData of postsData) {
     postData['id'] = uuidParse.unparse(postData['id']);
