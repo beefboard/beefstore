@@ -272,7 +272,7 @@ export async function getPost(id: string): Promise<Post | null> {
   return null;
 }
 
-export async function getPosts(approved: boolean, page?: number) {
+export async function getPosts(approved: boolean, page?: number, limit: number = Infinity) {
   if (!db) {
     await initDb();
   }

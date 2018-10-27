@@ -2,9 +2,9 @@ import * as db from './db/db';
 import * as uuid from 'uuid';
 
 export interface PostsQuery {
-  approved: boolean;
+  approved: string | boolean;
   page?: number;
-  num?: number;
+  limit?: number;
 }
 
 export async function create(author: string, title: string, content: string): Promise<string> {
@@ -31,7 +31,13 @@ export async function get(id: string): Promise<db.Post | null> {
 }
 
 export async function getAll(query: PostsQuery): Promise<db.Post[]> {
-  return await db.getPosts(query.approved ? true : false, query.page);
+  return await db.getPosts(
+    query.approved.toString() === 'true' ?
+      true :
+      false,
+    query.page,
+    query.limit
+  );
 }
 
 export async function clear() {
