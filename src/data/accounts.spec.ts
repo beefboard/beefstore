@@ -1,5 +1,5 @@
 import * as accounts from './accounts';
-import { AuthSession } from './db/db';
+import { AuthSession, User } from './db/db';
 
 describe('login', () => {
   it('should refuse invalid passwords', async () => {
@@ -80,21 +80,17 @@ describe('registration', () => {
   beforeEach(async () => {
     await accounts.clearUsers();
   });
+
   it('should allow user registration', async () => {
     expect.assertions(1);
     const user = {
       username: 'test1',
       password: 'test2',
       firstName: 'test5',
-      lastName: 'test6'
+      lastName: 'test6',
+      email: 'test@test.com'
     };
-    await accounts.register(
-      user.username,
-      user.password,
-      user.firstName,
-      user.lastName,
-      false
-    );
+    await accounts.register(user);
 
     const token = await accounts.login('test1', 'test2') as string;
     expect(token.length).toBeGreaterThan(0);
@@ -106,15 +102,10 @@ describe('registration', () => {
       username: 'test2',
       password: 'test3',
       firstName: 'test5',
-      lastName: 'test6'
+      lastName: 'test6',
+      email: 'test@test.com'
     };
-    let success = await accounts.register(
-      user1.username,
-      user1.password,
-      user1.firstName,
-      user1.lastName,
-      false
-    );
+    let success = await accounts.register(user1);
 
     expect(success).toBe(true);
 
@@ -122,15 +113,10 @@ describe('registration', () => {
       username: 'test2',
       password: 'test3',
       firstName: 'test5',
-      lastName: 'test6'
+      lastName: 'test6',
+      email: 'test1@test.com'
     };
-    success = await accounts.register(
-      user2.username,
-      user2.password,
-      user2.firstName,
-      user2.lastName,
-      false
-    );
+    success = await accounts.register(user2);
     expect(success).toBe(false);
   });
 
@@ -140,17 +126,52 @@ describe('registration', () => {
       username: 'lOweRCase',
       password: 'test2',
       firstName: 'test5',
-      lastName: 'test6'
+      lastName: 'test6',
+      email: 'test3@test.com'
     };
-    await accounts.register(
-      user.username,
-      user.password,
-      user.firstName,
-      user.lastName,
-      false
-    );
+    await accounts.register(user);
 
     const token = await accounts.login('lowercase', 'test2') as string;
     expect(token).not.toBe(null);
+  });
+});
+
+describe('retrieval', () => {
+  it('should allow user details to be retreived from a username', async () => {
+    expect.assertions(1);
+
+    const user = {
+      username: 'lOweRCase',
+      password: 'test2',
+      firstName: 'test5',
+      lastName: 'test6',
+      email: 'test3@test.com'
+    };
+    await accounts.register(user);
+
+    const details = await accounts.getUser('lowercase');
+    expect(details).not.toBe(null);
+  });
+
+  it('should not provide password hash of user', async () => {
+    expect.assertions(1);
+
+    const user = {
+      username: 'lOweRCase',
+      password: 'test2',
+      firstName: 'test5',
+      lastName: 'test6',
+      email: 'test3@test.com'
+    };
+    await accounts.register(user);
+
+    const details = await accounts.getUser('lowercase') as User;
+    expect(details.passwordHash).not.toBe(expect.anything());
+  });
+
+  it('should return null for non existent user', async () => {
+    expect.assertions(1);
+
+    expect(await accounts.getUser('asdfasdf')).toBe(null);
   });
 });

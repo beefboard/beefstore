@@ -8,6 +8,7 @@ export interface User {
   passwordHash: string;
   firstName: string;
   lastName: string;
+  email: string;
   admin: boolean;
 }
 
@@ -60,6 +61,7 @@ async function generateUsersTable() {
       table.string('password');
       table.string('firstName');
       table.string('lastName');
+      table.string('email');
       table.boolean('admin');
       table.primary(['username']);
     });
@@ -129,8 +131,6 @@ export async function initDb() {
       useNullAsDefault: true,
       pool: { min: 0, max: 1 }
     });
-    // await db.schema.dropTableIfExists(TABLE_USERS);
-    // await db.schema.dropTableIfExists(TABLE_SESSIONS);
   } else {
     db = knex({
       client: 'pg',
@@ -158,6 +158,7 @@ export async function getDetails(username: string): Promise<User | null> {
     username: detailsRow['username'],
     firstName: detailsRow['firstName'],
     lastName: detailsRow['lastName'],
+    email: detailsRow['email'],
     admin: detailsRow['admin']
   };
 }
@@ -176,6 +177,7 @@ export async function saveUser(user: User) {
     password: user.passwordHash,
     firstName: user.firstName,
     lastName: user.lastName,
+    email: user.email,
     admin: user.admin
   }).into(TABLE_USERS);
 

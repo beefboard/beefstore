@@ -59,7 +59,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(404);
     }
 
-    // Cannot delete posts if you are not the owner.
+    // Cannot delete posts if you are not the owner, or you are not admin
     if (post.author !== session.username && session.admin) {
       return res.status(403).send({ error: 'Forbidden' });
     }

@@ -2,6 +2,15 @@ import * as db from './db/db';
 import bcrypt from 'bcrypt';
 import * as uuid from 'uuid';
 import moment from 'moment';
+import emailValidator from 'email-validator';
+
+interface RegisterDetails {
+  username: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
 
 /**
  * Login to the account, returning the auth token
@@ -33,23 +42,21 @@ export async function login(username: string, password: string): Promise<string 
   return null;
 }
 
-export async function register(
-  username: string,
-  password: string,
-  firstName: string,
-  lastName: string,
-  admin: boolean): Promise<boolean> {
-
+export async function register(details: RegisterDetails): Promise<boolean> {
   const user: db.User = {
-    username: username.toLowerCase(),
-    passwordHash: await bcrypt.hash(password, 10),
-    firstName: firstName,
-    lastName: lastName,
-    admin: admin
+    username: details.username.toLowerCase(),
+    passwordHash: await bcrypt.hash(details.password, 10),
+    firstName: details.firstName,
+    lastName: details.lastName,
+    email: details.email.toLowerCase(),
+    admin: false
   };
 
-  const success = await db.saveUser(user);
-  return success;
+  if (!emailValidator.validate(details.email)) {
+    return false;
+  }
+
+  return await db.saveUser(user);
 }
 
 export async function getSession(token: string): Promise<db.AuthSession | null> {
@@ -77,6 +84,22 @@ export async function getSession(token: string): Promise<db.AuthSession | null> 
     }
   }
   return null;
+}
+
+export async function getUser(username: string) {
+  const details = await db.getDetails(username);
+
+  if (!details) {
+    return null;
+  }
+
+  return {
+    username: details.username,
+    firstName: details.firstName,
+    lastName: details.lastName,
+    email: details.email,
+    admin: details.admin
+  };
 }
 
 export async function clearUsers() {
