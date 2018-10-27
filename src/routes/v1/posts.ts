@@ -36,7 +36,9 @@ router.get('/:id', async (req, res) => {
 
     // Don't allow post to be seen if we are not admin
     // and it has not been approved
-    if (!post || !session || (!post.approved && !session.admin)) {
+    if (!post || !session
+        || (!post.approved && !session.admin
+            && post.author !== session.username)) {
       return res.status(404).send({ error: 'Not found' });
     }
 
