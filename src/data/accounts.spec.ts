@@ -1,5 +1,9 @@
 import * as accounts from './accounts';
-import { AuthSession, User } from './db/db';
+import { AuthSession, User, initDb } from './db/db';
+
+beforeAll(async () => {
+  await initDb();
+});
 
 describe('login', () => {
   it('should refuse invalid passwords', async () => {
@@ -133,6 +137,19 @@ describe('registration', () => {
 
     const token = await accounts.login('lowercase', 'test2') as string;
     expect(token).not.toBe(null);
+  });
+
+  it('should not allow bad emails', async () => {
+    expect.assertions(1);
+    const user = {
+      username: 'lOweRCase',
+      password: 'test2',
+      firstName: 'test5',
+      lastName: 'test6',
+      email: 'bademail'
+    };
+
+    expect(await accounts.register(user)).toBe(false);
   });
 });
 

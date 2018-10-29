@@ -94,27 +94,18 @@ async function generatePostsTable() {
 }
 
 export async function generateInitialUsers() {
-  if (TEST_MODE) {
-    try {
-      await db.insert({
-        username: 'test',
-        password: await bcrypt.hash('test', 10),
-        firstName: 'test',
-        lastName: 'test',
-        admin: true
-      }).into('users');
-    } catch (e) {}
-  } else {
-    try {
-      await db.insert({
-        username: 'admin',
-        password: await bcrypt.hash('admin', 10),
-        firstName: 'admin',
-        lastName: 'admin',
-        admin: true
-      }).into('users');
-    } catch (e) {}
-  }
+  const password = TEST_MODE ? 'test' : 'admin';
+  const username = TEST_MODE ? 'test' : 'admin';
+
+  try {
+    await db.insert({
+      username: username,
+      password: await bcrypt.hash(password, 10),
+      firstName: 'test',
+      lastName: 'test',
+      admin: true
+    }).into('users');
+  } catch (e) {}
 }
 
 export async function clearUsers() {
@@ -122,6 +113,10 @@ export async function clearUsers() {
 }
 
 export async function initDb() {
+  if (db) {
+    return;
+  }
+
   if (TEST_MODE) {
     db = knex({
       client: 'sqlite3',
@@ -145,9 +140,6 @@ export async function initDb() {
 }
 
 export async function getDetails(username: string): Promise<User | null> {
-  if (!db) {
-    await initDb();
-  }
   const detailsRow = await db.select().from(TABLE_USERS).where('username', username).first();
   if (!detailsRow) {
     return null;
@@ -164,10 +156,6 @@ export async function getDetails(username: string): Promise<User | null> {
 }
 
 export async function saveUser(user: User) {
-  if (!db) {
-    await initDb();
-  }
-
   if (await db.select('username').from(TABLE_USERS).where('username', user.username).first()) {
     return false;
   }
@@ -185,9 +173,6 @@ export async function saveUser(user: User) {
 }
 
 export async function storeSession(token: string, username: string, expiration: Date) {
-  if (!db) {
-    await initDb();
-  }
   const binToken = convertUuid(token);
 
   try {
@@ -205,9 +190,6 @@ export async function storeSession(token: string, username: string, expiration: 
 }
 
 export async function getSession(token: string): Promise<SessionData | null> {
-  if (!db) {
-    await initDb();
-  }
   const sessionData = await db.select(['username', 'expiration'])
                               .from(TABLE_SESSIONS)
                               .where('token', convertUuid(token))
@@ -233,9 +215,6 @@ export async function removeSessions(olderThan: Date) {
 }
 
 export async function storePost(post: Post) {
-  if (!db) {
-    await initDb();
-  }
   await db.insert({
     id: convertUuid(post.id),
     author: post.author,
@@ -248,19 +227,12 @@ export async function storePost(post: Post) {
 }
 
 export async function removePost(id: string) {
-  if (!db) {
-    await initDb();
-  }
-
   return (
     await db.delete().from(TABLE_POSTS).where('id', convertUuid(id))
   ) > 0;
 }
 
 export async function getPost(id: string): Promise<Post | null> {
-  if (!db) {
-    await initDb();
-  }
   const postData = await db.select().from(TABLE_POSTS).where('id', convertUuid(id)).first();
 
   if (postData) {
@@ -273,10 +245,6 @@ export async function getPost(id: string): Promise<Post | null> {
 }
 
 export async function getPosts(approved: boolean, page?: number, limit: number = Infinity) {
-  if (!db) {
-    await initDb();
-  }
-
   const postsData = await db.select().from(TABLE_POSTS).where('approved', approved);
 
   for (const postData of postsData) {
@@ -288,17 +256,10 @@ export async function getPosts(approved: boolean, page?: number, limit: number =
 }
 
 export async function clearPosts() {
-  if (!db) {
-    await initDb();
-  }
   await db.delete().from(TABLE_POSTS);
 }
 
 export async function setPostApproval(id: string, approved: boolean) {
-  if (!db) {
-    await initDb();
-  }
-
   return (
     await db
       .update({ approved: approved })
@@ -308,10 +269,6 @@ export async function setPostApproval(id: string, approved: boolean) {
 }
 
 export async function setPinned(id: string, pinned: boolean) {
-  if (!db) {
-    await initDb();
-  }
-
   return (
     await db
       .update({ pinned: pinned })

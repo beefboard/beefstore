@@ -110,6 +110,7 @@ export async function clearUsers() {
 export async function logout(token: string): Promise<boolean> {
   return await db.removeSession(token);
 }
+
 /**
  * Remove expired sessions every 60 seconds
  */

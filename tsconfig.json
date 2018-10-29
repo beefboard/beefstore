@@ -62,4 +62,9 @@
   "exclude": [
     "src/**/*.spec.ts"
   ],
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts"
+  ],
+  "compileOnSave": true
 }

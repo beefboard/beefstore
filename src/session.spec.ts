@@ -2,6 +2,11 @@ import * as session from './session';
 import * as accounts from './data/accounts';
 
 import { Response } from 'express';
+import { initDb } from './data/db/db';
+
+beforeAll(async () => {
+  await initDb();
+});
 
 class MockResponse {
   public data: any;
@@ -46,7 +51,7 @@ describe('decoder', () => {
     } as any;
 
     await session.decoder(req, {} as Response, () => {
-      expect(req.session).toBeNull();
+      expect(req.session).toBeUndefined();
       done();
     });
   });

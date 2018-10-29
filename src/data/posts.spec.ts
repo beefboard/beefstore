@@ -1,5 +1,9 @@
 import * as posts from './posts';
-import { Post } from './db/db';
+import { Post, initDb } from './db/db';
+
+beforeAll(async () => {
+  await initDb();
+});
 
 beforeEach(async () => {
   await posts.clear();

@@ -1,11 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
 import * as accounts from './data/accounts';
 
-export async function decoder(req: Request, res: Response, next: NextFunction) {
+export async function decoder(req: Request, _: Response, next: NextFunction) {
   const token = req.headers['x-access-token'] as string;
 
   if (token != null) {
-    req.session = await accounts.getSession(token);
+    const session = await accounts.getSession(token);
+    if (session) {
+      req.session = session;
+    }
   }
 
   next();
