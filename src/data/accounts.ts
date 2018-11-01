@@ -87,7 +87,7 @@ export async function getSession(token: string): Promise<db.AuthSession | null> 
 }
 
 export async function getUser(username: string) {
-  const details = await db.getDetails(username);
+  const details = await db.getDetails(username.toLowerCase());
 
   if (!details) {
     return null;

@@ -30,7 +30,7 @@ describe('login', () => {
   it('should accept any case for username', async () => {
     expect.assertions(1);
 
-    const token = await accounts.login('TesT', 'test') as string;
+    const token = (await accounts.login('TesT', 'test')) as string;
 
     expect(token.length).toBeGreaterThan(0);
   });
@@ -40,7 +40,7 @@ describe('logout', async () => {
   it('should allow session to be deleted', async () => {
     expect.assertions(2);
 
-    const token = await accounts.login('test', 'test') as string;
+    const token = (await accounts.login('test', 'test')) as string;
 
     if (!token) {
       throw Error('Could not get token');
@@ -54,7 +54,7 @@ describe('logout', async () => {
 describe('session', async () => {
   it('should return session from token', async () => {
     expect.assertions(1);
-    const token = await accounts.login('test', 'test') as string;
+    const token = (await accounts.login('test', 'test')) as string;
     if (!token) {
       throw Error('Could not get token');
     }
@@ -96,7 +96,7 @@ describe('registration', () => {
     };
     await accounts.register(user);
 
-    const token = await accounts.login('test1', 'test2') as string;
+    const token = (await accounts.login('test1', 'test2')) as string;
     expect(token.length).toBeGreaterThan(0);
   });
 
@@ -135,7 +135,7 @@ describe('registration', () => {
     };
     await accounts.register(user);
 
-    const token = await accounts.login('lowercase', 'test2') as string;
+    const token = (await accounts.login('lowercase', 'test2')) as string;
     expect(token).not.toBe(null);
   });
 
@@ -170,6 +170,20 @@ describe('retrieval', () => {
     expect(details).not.toBe(null);
   });
 
+  it('should ignore case when searching for a username', async () => {
+    const user = {
+      username: 'lOweRCase',
+      password: 'test2',
+      firstName: 'test5',
+      lastName: 'test6',
+      email: 'test3@test.com'
+    };
+    await accounts.register(user);
+
+    const details = await accounts.getUser('LOWERCASE');
+    expect(details).not.toBe(null);
+  });
+
   it('should not provide password hash of user', async () => {
     expect.assertions(1);
 
@@ -182,7 +196,7 @@ describe('retrieval', () => {
     };
     await accounts.register(user);
 
-    const details = await accounts.getUser('lowercase') as User;
+    const details = (await accounts.getUser('lowercase')) as User;
     expect(details.passwordHash).not.toBe(expect.anything());
   });
 
