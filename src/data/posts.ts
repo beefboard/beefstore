@@ -32,7 +32,7 @@ export async function get(id: string): Promise<db.Post | null> {
 
 export async function getAll(query: PostsQuery = {}): Promise<db.Post[]> {
   return await db.getPosts(
-    query.approved && query.approved.toString() === 'false' ?
+    query.approved !== undefined && query.approved.toString() === 'false' ?
       false :
       true,
     query.page,
