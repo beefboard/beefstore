@@ -100,6 +100,24 @@ describe('retreival', () => {
     const allPosts2 = await posts.getAll({ approved: true });
     expect(allPosts2.length).toBe(1);
   });
+
+  it('should filter unapproved posts by default', async () => {
+    expect.assertions(1);
+
+    const numPosts = 10;
+
+    for (let i = 0; i < numPosts; i += 1) {
+      const post = {
+        title: 'test title',
+        author: 'test',
+        content: 'test'
+      };
+      await posts.create(post.author, post.title, post.content);
+    }
+
+    const allPosts = await posts.getAll();
+    expect(allPosts.length).toBe(0);
+  });
 });
 
 describe('approval', () => {

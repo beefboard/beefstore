@@ -2,7 +2,7 @@ import * as db from './db/db';
 import * as uuid from 'uuid';
 
 export interface PostsQuery {
-  approved: string | boolean;
+  approved?: string | boolean;
   page?: number;
   limit?: number;
 }
@@ -30,11 +30,11 @@ export async function get(id: string): Promise<db.Post | null> {
   return await db.getPost(id);
 }
 
-export async function getAll(query: PostsQuery): Promise<db.Post[]> {
+export async function getAll(query: PostsQuery = {}): Promise<db.Post[]> {
   return await db.getPosts(
-    query.approved.toString() === 'true' ?
-      true :
-      false,
+    query.approved && query.approved.toString() === 'false' ?
+      false :
+      true,
     query.page,
     query.limit
   );
