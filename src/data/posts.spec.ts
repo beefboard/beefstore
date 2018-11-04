@@ -12,14 +12,14 @@ beforeEach(async () => {
 describe('creation', () => {
   it('should return post id', async () => {
     expect.assertions(1);
-    const id = await posts.create('test', 'test title', 'This is the content of the post');
+    const id = await posts.create('test', 'test title', 'This is the content of the post', 2);
     expect(id).not.toBeNull();
   });
 
   it('should generate unique post id\'s', async () => {
     expect.assertions(1);
-    const id1 = await posts.create('test', 'test title', 'This is the content of the post');
-    const id2 = await posts.create('test', 'test title', 'This is the content of the post');
+    const id1 = await posts.create('test', 'test title', 'This is the content of the post', 2);
+    const id2 = await posts.create('test', 'test title', 'This is the content of the post', 3);
     expect(id1).not.toBe(id2);
   });
 });
@@ -31,10 +31,10 @@ describe('retreival', () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
-
+      content: 'test',
+      numImages: 0
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
 
     const storedPost = await posts.get(id) as Post;
     expect(storedPost.title).toBe(post.title);
@@ -55,9 +55,10 @@ describe('retreival', () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
+      content: 'test',
+      numImages: 0
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
 
     const storedPost = await posts.get(id) as Post;
 
@@ -79,9 +80,10 @@ describe('retreival', () => {
       const post = {
         title: 'test title',
         author: 'test',
-        content: 'test'
+        content: 'test',
+        numImages: 0
       };
-      await posts.create(post.author, post.title, post.content);
+      const id = await posts.create(post.author, post.title, post.content, post.numImages);
     }
 
     const allPosts = await posts.getAll({ approved: false });
@@ -90,7 +92,7 @@ describe('retreival', () => {
 
   it('should allow unapproved posts to be filtered', async () => {
     expect.assertions(2);
-    const postId = await posts.create('test', 'test', 'test');
+    const postId = await posts.create('test', 'test', 'test', 0);
 
     const allPosts = await posts.getAll({ approved: true });
     expect(allPosts.length).toBe(0);
@@ -110,9 +112,10 @@ describe('retreival', () => {
       const post = {
         title: 'test title',
         author: 'test',
-        content: 'test'
+        content: 'test',
+        numImages: 0
       };
-      await posts.create(post.author, post.title, post.content);
+      const id = await posts.create(post.author, post.title, post.content, post.numImages);
     }
 
     const allPosts = await posts.getAll();
@@ -127,9 +130,10 @@ describe('approval', () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
+      content: 'test',
+      numImages: 0
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
     const storedPost = await posts.get(id) as Post;
 
     expect(storedPost.approved).not.toBeTruthy();
@@ -141,9 +145,10 @@ describe('approval', () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
+      content: 'test',
+      numImages: 0
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
     await posts.approve(id);
 
     const storedPost = await posts.get(id) as Post;
@@ -167,9 +172,10 @@ describe('pinning', async () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
+      content: 'test',
+      numImages: 0
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
 
     const storedPost = await posts.get(id) as Post;
     expect(storedPost.pinned).toBeFalsy();
@@ -181,9 +187,10 @@ describe('pinning', async () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
+      content: 'test',
+      numImages: 2
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
     const exists = await posts.pin(id);
 
     expect(exists).toBeTruthy();
@@ -198,9 +205,10 @@ describe('pinning', async () => {
     const post = {
       title: 'test title',
       author: 'test',
-      content: 'test'
+      content: 'test',
+      numImages: 0
     };
-    const id = await posts.create(post.author, post.title, post.content);
+    const id = await posts.create(post.author, post.title, post.content, post.numImages);
     await posts.pin(id);
     await posts.unpin(id);
 
@@ -220,7 +228,7 @@ describe('removal', () => {
   it('should allow posts to be deleted', async () => {
     expect.assertions(2);
 
-    const postId = await posts.create('test', 'test', 'test');
+    const postId = await posts.create('test', 'test', 'test', 0);
     expect(await posts.get(postId)).toBeTruthy();
     await posts.remove(postId);
     expect(await posts.get(postId)).toBeFalsy();
@@ -228,7 +236,7 @@ describe('removal', () => {
 
   it('should return true when post exists', async () => {
     expect.assertions(1);
-    const postId = await posts.create('test', 'test', 'test');
+    const postId = await posts.create('test', 'test', 'test', 0);
     expect(await posts.remove(postId)).toBeTruthy();
   });
 

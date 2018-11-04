@@ -2,22 +2,13 @@ import 'source-map-support/register';
 
 import express from 'express';
 import bodyParser from 'body-parser';
-import cors from 'cors';
-import * as session from './session';
 import { initDb } from './data/db/db';
 import v1 from './routes/v1';
 
 const app = express();
 
-// Allow for cross origin requests, as this is
-// an API
-app.use(cors());
-
 // Parse any body
 app.use(bodyParser.json());
-
-// Decode token from session
-app.use(session.decoder);
 
 app.use('/v1', v1);
 
@@ -34,7 +25,7 @@ app.use((_, res) => {
 });
 
 app.listen(2832, async () => {
-  console.log('Listening on 2832');
+  console.log('Listening on 2835');
   try {
     await initDb();
   } catch (e) {

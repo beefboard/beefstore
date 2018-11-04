@@ -7,13 +7,19 @@ export interface PostsQuery {
   limit?: number;
 }
 
-export async function create(author: string, title: string, content: string): Promise<string> {
+export async function create(
+  author: string,
+  title: string,
+  content: string,
+  numImages: number
+): Promise<string> {
   const id = uuid.v1();
   const post: db.Post = {
     author: author,
     id: id,
     title: title,
     content: content,
+    numImages: numImages,
     approved: false,
     pinned: false,
     date: new Date()
