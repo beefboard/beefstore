@@ -50,14 +50,10 @@ export async function clear() {
   return await db.clearPosts();
 }
 
-export async function approve(id: string): Promise<boolean> {
-  return await db.setPostApproval(id, true);
+export async function setApproval(id: string, approval: boolean): Promise<boolean> {
+  return await db.setPostApproval(id, approval);
 }
 
-export async function pin(id: string): Promise<boolean> {
-  return await db.setPinned(id, true);
-}
-
-export async function unpin(id: string): Promise<boolean> {
-  return await db.setPinned(id, false);
+export async function setPinned(id: string, pinned: boolean): Promise<boolean> {
+  return await db.setPinned(id, pinned);
 }

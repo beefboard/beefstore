@@ -97,7 +97,7 @@ describe('retreival', () => {
     const allPosts = await posts.getAll({ approved: true });
     expect(allPosts.length).toBe(0);
 
-    await posts.approve(postId);
+    await posts.setApproval(postId, true);
 
     const allPosts2 = await posts.getAll({ approved: true });
     expect(allPosts2.length).toBe(1);
@@ -149,7 +149,7 @@ describe('approval', () => {
       numImages: 0
     };
     const id = await posts.create(post.author, post.title, post.content, post.numImages);
-    await posts.approve(id);
+    await posts.setApproval(id, true);
 
     const storedPost = await posts.get(id) as Post;
     expect(storedPost.approved).toBeTruthy();
@@ -158,7 +158,7 @@ describe('approval', () => {
   it('should return false for invalid posts', async () => {
     expect.assertions(1);
 
-    const successful = await posts.approve('asdfjasdf');
+    const successful = await posts.setApproval('asdfjasdf', true);
 
     expect(successful).toBeFalsy();
   });
@@ -191,7 +191,7 @@ describe('pinning', async () => {
       numImages: 2
     };
     const id = await posts.create(post.author, post.title, post.content, post.numImages);
-    const exists = await posts.pin(id);
+    const exists = await posts.setPinned(id, true);
 
     expect(exists).toBeTruthy();
 
@@ -209,8 +209,8 @@ describe('pinning', async () => {
       numImages: 0
     };
     const id = await posts.create(post.author, post.title, post.content, post.numImages);
-    await posts.pin(id);
-    await posts.unpin(id);
+    await posts.setPinned(id, true);
+    await posts.setPinned(id, false);
 
     const storedPost = await posts.get(id) as Post;
     expect(storedPost.pinned).toBeFalsy();
@@ -219,7 +219,7 @@ describe('pinning', async () => {
   it('should return false for invalid posts', async () => {
     expect.assertions(1);
 
-    const response = await posts.pin('test-test');
+    const response = await posts.setPinned('test-test', true);
     expect(response).toBeFalsy();
   });
 });

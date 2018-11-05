@@ -23,4 +23,4 @@ RUN npm install
 
 COPY --from=build /build/build build
 
-ENTRYPOINT [ "node", "/beefboard-api/build/app.js" ]
+ENTRYPOINT [ "node", "/beefboard-api/build/server.js" ]

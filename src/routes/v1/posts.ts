@@ -71,9 +71,10 @@ router.post('/', async (req, res) => {
 
 router.put('/:id/approved', async (req, res) => {
   const postId = req.params.id;
+  const approval = req.body.approval === 'true';
 
   try {
-    const success = await posts.approve(postId);
+    const success = await posts.setApproval(postId, approval);
 
     if (!success) {
       return res.status(404).send({ error: 'Not found' });
@@ -88,9 +89,10 @@ router.put('/:id/approved', async (req, res) => {
 
 router.put('/:id/pin', async (req, res) => {
   const postId = req.params.id;
+  const pinned = req.body.pinned === 'true';
 
   try {
-    const success = await posts.pin(postId);
+    const success = await posts.setPinned(postId, pinned);
 
     if (!success) {
       return res.status(404).send({ error: 'Not found' });
