@@ -14,7 +14,7 @@ RUN npm run build
 
 # Copy build into production environemnt
 FROM node:10
-WORKDIR /beefboard-api
+WORKDIR /beefstore
 
 ENV NODE_ENV=production
 
@@ -23,4 +23,4 @@ RUN npm install
 
 COPY --from=build /build/build build
 
-ENTRYPOINT [ "node", "/beefboard-api/build/server.js" ]
+ENTRYPOINT [ "node", "/beefstore/build/server.js" ]
