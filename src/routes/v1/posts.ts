@@ -1,7 +1,12 @@
-import { Router } from 'express';
+import { Router, Response } from 'express';
 import * as posts from '../../data/posts';
 
 const router = Router();
+
+function handleError(e: any, res: Response) {
+  console.error(e);
+  res.status(500).send({ error: 'Internal error' });
+}
 
 router.get('/', async (req, res) => {
   const query = req.query as posts.PostsQuery;
@@ -10,8 +15,7 @@ router.get('/', async (req, res) => {
       posts: await posts.getAll(query)
     });
   } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal error' });
+    handleError(e, res);
   }
 });
 
@@ -27,8 +31,7 @@ router.get('/:id', async (req, res) => {
 
     res.send(post);
   } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal error' });
+    handleError(e, res);
   }
 });
 
@@ -43,8 +46,7 @@ router.delete('/:id', async (req, res) => {
     await posts.remove(postId);
     res.send({ success: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal error' });
+    handleError(e, res);
   }
 });
 
@@ -64,8 +66,7 @@ router.post('/', async (req, res) => {
     const id = await posts.create(author, title, content, numImages);
     res.send({ id: id });
   } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal error' });
+    handleError(e, res);
   }
 });
 
@@ -82,12 +83,11 @@ router.put('/:id/approved', async (req, res) => {
 
     res.send({ succes: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal error' });
+    handleError(e, res);
   }
 });
 
-router.put('/:id/pin', async (req, res) => {
+router.put('/:id/pinned', async (req, res) => {
   const postId = req.params.id;
   const pinned = req.body.pinned === 'true';
 
@@ -100,8 +100,41 @@ router.put('/:id/pin', async (req, res) => {
 
     res.send({ succes: true });
   } catch (e) {
-    console.error(e);
-    res.status(500).send({ error: 'Internal error' });
+    handleError(e, res);
+  }
+});
+
+router.put('/:id/notified', async (req, res) => {
+  const postId = req.params.id;
+  const notified = req.body.notified === 'true';
+
+  try {
+    const success = await posts.setNotified(postId, notified);
+
+    if (!success) {
+      return res.status(404).send({ error: 'Not found' });
+    }
+
+    res.send({ succes: true });
+  } catch (e) {
+    handleError(e, res);
+  }
+});
+
+router.put('/:id/approvalRequested', async (req, res) => {
+  const postId = req.params.id;
+  const approvalRequested = req.body.approvalRequested === 'true';
+
+  try {
+    const success = await posts.setApprovalRequested(postId, approvalRequested);
+
+    if (!success) {
+      return res.status(404).send({ error: 'Not found' });
+    }
+
+    res.send({ succes: true });
+  } catch (e) {
+    handleError(e, res);
   }
 });
 

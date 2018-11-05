@@ -3,6 +3,7 @@ import * as uuid from 'uuid';
 
 export interface PostsQuery {
   approved?: string | boolean;
+  approvalRequested?: string | boolean;
   page?: number;
   limit?: number;
 }
@@ -22,6 +23,8 @@ export async function create(
     numImages: numImages,
     approved: false,
     pinned: false,
+    approvalRequested: false,
+    notified: false,
     date: new Date()
   };
   await db.storePost(post);
@@ -41,6 +44,9 @@ export async function getAll(query: PostsQuery = {}): Promise<db.Post[]> {
     query.approved !== undefined && query.approved.toString() === 'false' ?
       false :
       true,
+    query.approvalRequested !== undefined && query.approvalRequested.toString() === 'false' ?
+      false :
+      true,
     query.page,
     query.limit
   );
@@ -55,5 +61,13 @@ export async function setApproval(id: string, approval: boolean): Promise<boolea
 }
 
 export async function setPinned(id: string, pinned: boolean): Promise<boolean> {
-  return await db.setPinned(id, pinned);
+  return await db.setPostPinned(id, pinned);
+}
+
+export async function setNotified(id: string, notified: boolean): Promise<boolean> {
+  return await db.setPostNotified(id, notified);
+}
+
+export async function setApprovalRequested(id: string, requested: boolean): Promise<boolean> {
+  return await db.setPostApprovalRequested(id, requested);
 }

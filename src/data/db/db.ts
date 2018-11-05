@@ -10,6 +10,8 @@ export interface Post {
   approved: boolean;
   date: Date;
   pinned: boolean;
+  notified: boolean;
+  approvalRequested: boolean;
 }
 
 export const TABLE_POSTS = 'posts';
@@ -38,6 +40,8 @@ async function generatePostsTable() {
       table.string('content');
       table.boolean('approved');
       table.boolean('pinned');
+      table.boolean('notified');
+      table.boolean('approvalRequested');
     });
   }
 }
@@ -69,7 +73,9 @@ export async function storePost(post: Post) {
     content: post.content,
     approved: post.approved,
     date: post.date,
-    pinned: post.pinned
+    pinned: post.pinned,
+    approvalRequested: post.approvalRequested,
+    notified: post.notified
   }).into(TABLE_POSTS);
 }
 
@@ -91,7 +97,12 @@ export async function getPost(id: string): Promise<Post | null> {
   return null;
 }
 
-export async function getPosts(approved: boolean, page?: number, limit: number = Infinity) {
+export async function getPosts(
+  approved: boolean,
+  approvalRequested: boolean,
+  page?: number,
+  limit: number = Infinity
+): Promise<Post[]> {
   const postsData = await db.select().from(TABLE_POSTS).where('approved', approved);
 
   for (const postData of postsData) {
@@ -115,10 +126,28 @@ export async function setPostApproval(id: string, approved: boolean) {
   ) > 0;
 }
 
-export async function setPinned(id: string, pinned: boolean) {
+export async function setPostPinned(id: string, pinned: boolean) {
   return (
     await db
       .update({ pinned: pinned })
+      .table(TABLE_POSTS)
+      .where('id', convertUuid(id))
+  ) > 0;
+}
+
+export async function setPostApprovalRequested(id: string, requested: boolean) {
+  return (
+    await db
+      .update({ approvalRequested: requested })
+      .table(TABLE_POSTS)
+      .where('id', convertUuid(id))
+  ) > 0;
+}
+
+export async function setPostNotified(id: string, notified: boolean) {
+  return (
+    await db
+      .update({ notified: notified })
       .table(TABLE_POSTS)
       .where('id', convertUuid(id))
   ) > 0;
