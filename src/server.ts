@@ -1,3 +1,5 @@
+import 'source-map-support/register';
+
 import app from './app';
 import { initDb } from './data/db/db';
 
@@ -10,6 +12,5 @@ import { initDb } from './data/db/db';
 
   app.listen(2832, async () => {
     console.log('Listening on 2835');
-
   });
 })();
