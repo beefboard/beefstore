@@ -11,4 +11,14 @@ describe('routes', () => {
       });
     });
   });
+
+  describe('Unmatched routes', () => {
+    it('should return 404 not found', async () => {
+      const response = await supertest(app).get('/adskjasjhdsgh');
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual({
+        error: 'Not found'
+      });
+    });
+  });
 });

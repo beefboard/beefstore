@@ -116,6 +116,7 @@ describe('posts', () => {
       expect(post).toBeFalsy();
     });
   });
+
   describe('getAll', () => {
     it('should provide a list of posts', async () => {
       expect.assertions(1);
@@ -132,7 +133,7 @@ describe('posts', () => {
         const id = await posts.create(post.author, post.title, post.content, post.numImages);
       }
 
-      const allPosts = await posts.getAll({ approved: false });
+      const allPosts = await posts.getAll({ approved: 'false' });
       expect(allPosts.length).toBe(numPosts);
     });
 
@@ -140,12 +141,12 @@ describe('posts', () => {
       expect.assertions(2);
       const postId = await posts.create('test', 'test', 'test', 0);
 
-      const allPosts = await posts.getAll({ approved: true });
+      const allPosts = await posts.getAll({ approved: 'true' });
       expect(allPosts.length).toBe(0);
 
       await posts.setApproval(postId, true);
 
-      const allPosts2 = await posts.getAll({ approved: true });
+      const allPosts2 = await posts.getAll({ approved: 'true' });
       expect(allPosts2.length).toBe(1);
     });
 
@@ -166,6 +167,74 @@ describe('posts', () => {
 
       const allPosts = await posts.getAll();
       expect(allPosts.length).toBe(0);
+    });
+
+    it('should allow approval requested posts to be filtered', async () => {
+      expect.assertions(1);
+
+      const numPosts = 10;
+
+      for (let i = 0; i < numPosts; i += 1) {
+        const post = {
+          title: 'test title',
+          author: 'test',
+          content: 'test',
+          numImages: 0
+        };
+        const id = await posts.create(post.author, post.title, post.content, post.numImages);
+        await posts.setApprovalRequested(id, true);
+      }
+
+      const allPosts = await posts.getAll({
+        approvalRequested: 'true',
+        approved: 'false'
+      });
+      expect(allPosts.length).toBe(10);
+    });
+
+    it('should allow posts to be paged', async () => {
+      expect.assertions(1);
+
+      const numPosts = 10;
+
+      for (let i = 0; i < numPosts; i += 1) {
+        const post = {
+          title: 'test title',
+          author: 'test',
+          content: 'test',
+          numImages: 0
+        };
+        const id = await posts.create(post.author, post.title, post.content, post.numImages);
+      }
+
+      const allPosts = await posts.getAll({
+        page: '0',
+        approved: 'false'
+      });
+      expect(allPosts.length).toBe(10);
+    });
+
+    it('should allow post limits to be set', async () => {
+      expect.assertions(1);
+
+      const numPosts = 10;
+
+      for (let i = 0; i < numPosts; i += 1) {
+        const post = {
+          title: 'test title',
+          author: 'test',
+          content: 'test',
+          numImages: 0
+        };
+        const id = await posts.create(post.author, post.title, post.content, post.numImages);
+      }
+
+      const allPosts = await posts.getAll({
+        limit: '10',
+        approved: 'false'
+      });
+
+      expect(allPosts.length).toBe(10);
     });
   });
 

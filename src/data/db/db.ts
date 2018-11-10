@@ -29,7 +29,7 @@ function convertUuid(id: string) {
   return Buffer.from(uuidParse.parse(id));
 }
 
-async function generatePostsTable() {
+export async function generatePostsTable() {
   if (!await db.schema.hasTable(TABLE_POSTS)) {
     await db.schema.createTable(TABLE_POSTS, (table) => {
       table.binary('id');
@@ -99,11 +99,18 @@ export async function getPost(id: string): Promise<Post | null> {
 
 export async function getPosts(
   approved: boolean,
-  approvalRequested: boolean,
+  approvalRequested?: boolean,
   page?: number,
   limit: number = Infinity
 ): Promise<Post[]> {
-  const postsData = await db.select().from(TABLE_POSTS).where('approved', approved);
+  let query = db.select().from(TABLE_POSTS)
+    .where('approved', approved);
+
+  if (approvalRequested !== undefined) {
+    query = query.where('approvalRequested', approvalRequested);
+  }
+
+  const postsData = await query;
 
   for (const postData of postsData) {
     postData['id'] = uuidParse.unparse(postData['id']);

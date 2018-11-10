@@ -5,7 +5,7 @@ const router = Router();
 
 function handleError(e: any, res: Response) {
   console.error(e);
-  res.status(500).send({ error: 'Internal error' });
+  res.status(500).send({ error: 'Internal server error' });
 }
 
 router.get('/', async (req, res) => {
@@ -25,7 +25,7 @@ router.get('/:id', async (req, res) => {
   try {
     const post = await posts.get(postId);
 
-    if (post) {
+    if (!post) {
       return res.status(404).send({ error: 'Not found' });
     }
 
@@ -38,12 +38,12 @@ router.get('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const postId = req.params.id;
   try {
-    const post = await posts.get(postId);
-    if (!post) {
-      return res.status(404);
+    const success = await posts.remove(postId);
+
+    if (!success) {
+      return res.status(404).send({ error: 'Not found' });
     }
 
-    await posts.remove(postId);
     res.send({ success: true });
   } catch (e) {
     handleError(e, res);
@@ -72,7 +72,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id/approved', async (req, res) => {
   const postId = req.params.id;
-  const approval = req.body.approval === 'true';
+  const approval = req.body.approval === true;
 
   try {
     const success = await posts.setApproval(postId, approval);
@@ -81,7 +81,7 @@ router.put('/:id/approved', async (req, res) => {
       return res.status(404).send({ error: 'Not found' });
     }
 
-    res.send({ succes: true });
+    res.send({ success: true });
   } catch (e) {
     handleError(e, res);
   }
@@ -89,7 +89,7 @@ router.put('/:id/approved', async (req, res) => {
 
 router.put('/:id/pinned', async (req, res) => {
   const postId = req.params.id;
-  const pinned = req.body.pinned === 'true';
+  const pinned = req.body.pinned === true;
 
   try {
     const success = await posts.setPinned(postId, pinned);
@@ -98,7 +98,7 @@ router.put('/:id/pinned', async (req, res) => {
       return res.status(404).send({ error: 'Not found' });
     }
 
-    res.send({ succes: true });
+    res.send({ success: true });
   } catch (e) {
     handleError(e, res);
   }
@@ -106,7 +106,7 @@ router.put('/:id/pinned', async (req, res) => {
 
 router.put('/:id/notified', async (req, res) => {
   const postId = req.params.id;
-  const notified = req.body.notified === 'true';
+  const notified = req.body.notified === true;
 
   try {
     const success = await posts.setNotified(postId, notified);
@@ -115,7 +115,7 @@ router.put('/:id/notified', async (req, res) => {
       return res.status(404).send({ error: 'Not found' });
     }
 
-    res.send({ succes: true });
+    res.send({ success: true });
   } catch (e) {
     handleError(e, res);
   }
@@ -123,7 +123,7 @@ router.put('/:id/notified', async (req, res) => {
 
 router.put('/:id/approvalRequested', async (req, res) => {
   const postId = req.params.id;
-  const approvalRequested = req.body.approvalRequested === 'true';
+  const approvalRequested = req.body.approvalRequested === true;
 
   try {
     const success = await posts.setApprovalRequested(postId, approvalRequested);
@@ -132,7 +132,7 @@ router.put('/:id/approvalRequested', async (req, res) => {
       return res.status(404).send({ error: 'Not found' });
     }
 
-    res.send({ succes: true });
+    res.send({ success: true });
   } catch (e) {
     handleError(e, res);
   }
