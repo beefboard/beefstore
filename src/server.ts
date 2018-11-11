@@ -3,7 +3,7 @@ import 'source-map-support/register';
 import app from './app';
 import { initDb } from './data/db/db';
 
-const PORT = process.env.PORT || 2832;
+const PORT = process.env.PORT || 2833;
 
 (async () => {
   try {

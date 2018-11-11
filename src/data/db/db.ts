@@ -74,6 +74,7 @@ export async function storePost(post: Post) {
     approved: post.approved,
     date: post.date,
     pinned: post.pinned,
+    numImages: post.numImages,
     approvalRequested: post.approvalRequested,
     notified: post.notified
   }).into(TABLE_POSTS);
