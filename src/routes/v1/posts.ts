@@ -72,7 +72,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id/approved', async (req, res) => {
   const postId = req.params.id;
-  const approval = req.body.approval === true;
+  const approval = req.body.approved === true;
 
   try {
     const success = await posts.setApproval(postId, approval);

@@ -219,13 +219,13 @@ describe('/v1/posts', () => {
   describe('PUT /:id/approved', () => {
     it('should set approval of post to given approval', async () => {
       await supertest(app).put('/v1/posts/asdasf/approved').send({
-        approval: true
+        approved: true
       });
 
       expect(posts.setApproval).toHaveBeenCalledWith('asdasf', true);
 
       await supertest(app).put('/v1/posts/asdasf/approved').send({
-        approval: false
+        approved: false
       });
 
       expect(posts.setApproval).toHaveBeenCalledWith('asdasf', false);
@@ -239,7 +239,7 @@ describe('/v1/posts', () => {
       const response = await supertest(app)
         .put('/v1/posts/asdasf/approved')
         .send({
-          approval: true
+          approved: true
         });
 
       expect(response.status).toBe(200);
@@ -254,7 +254,7 @@ describe('/v1/posts', () => {
       const response = await supertest(app)
         .put('/v1/posts/asdasf/approved')
         .send({
-          approval: true
+          approved: true
         });
 
       expect(response.status).toBe(404);
@@ -269,7 +269,7 @@ describe('/v1/posts', () => {
       const response = await supertest(app)
         .put('/v1/posts/asdasf/approved')
         .send({
-          approval: true
+          approved: true
         });
 
       expect(response.status).toBe(500);
