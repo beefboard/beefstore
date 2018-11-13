@@ -37,7 +37,7 @@ export async function generatePostsTable() {
       table.dateTime('date');
       table.integer('numImages');
       table.string('title');
-      table.string('content');
+      table.string('content', 50000);
       table.boolean('approved');
       table.boolean('pinned');
       table.boolean('notified');
@@ -59,7 +59,8 @@ export async function initDb() {
   } else {
     db = knex({
       client: 'pg',
-      connection: pgConnectionConfig
+      connection: pgConnectionConfig,
+      pool: { min: 0, max: 10 }
     });
   }
   await generatePostsTable();
