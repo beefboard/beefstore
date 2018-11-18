@@ -32,16 +32,16 @@ function convertUuid(id: string) {
 export async function generatePostsTable() {
   if (!await db.schema.hasTable(TABLE_POSTS)) {
     await db.schema.createTable(TABLE_POSTS, (table) => {
-      table.binary('id');
-      table.string('author');
-      table.dateTime('date');
-      table.integer('numImages');
-      table.string('title');
-      table.string('content', 50000);
-      table.boolean('approved');
-      table.boolean('pinned');
-      table.boolean('notified');
-      table.boolean('approvalRequested');
+      table.binary('id').notNullable();
+      table.string('author').notNullable();
+      table.dateTime('date').notNullable();
+      table.integer('numImages').notNullable();
+      table.string('title').notNullable();
+      table.string('content', 50000).notNullable();
+      table.boolean('approved').notNullable();
+      table.boolean('pinned').notNullable();
+      table.boolean('notified').notNullable();
+      table.boolean('approvalRequested').notNullable();
     });
   }
 }
