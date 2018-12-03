@@ -22,7 +22,7 @@ test:
     paths:
       - coverage/
 
-test:
+lint:
   stage: test
   script:
    - npm run lint
