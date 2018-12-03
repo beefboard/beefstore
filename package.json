@@ -1,7 +1,7 @@
 {
   "name": "beefstore",
   "version": "1.0.0",
-  "description": "Beefboard posts api",
+  "description": "Beefboard's posts api",
   "main": "index.js",
   "scripts": {
     "test": "jest --coverage --verbose",
