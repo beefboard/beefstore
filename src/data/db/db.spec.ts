@@ -25,4 +25,19 @@ describe('db', () => {
       expect(await db.db.schema.hasTable(db.TABLE_POSTS)).toBe(true);
     });
   });
+
+  describe('generatePostsTable', async () => {
+    it('should only generate the posts table if it does not exist', async () => {
+      await db.initDb();
+      let thrown = null;
+
+      try {
+        await db.generatePostsTable();
+      } catch (e) {
+        thrown = e;
+      }
+
+      expect(thrown).toBe(null);
+    });
+  });
 });

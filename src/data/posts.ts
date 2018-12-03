@@ -2,9 +2,10 @@ import * as db from './db/db';
 import * as uuid from 'uuid';
 
 export interface PostsQuery {
-  approved?: string | boolean;
-  page?: number;
-  limit?: number;
+  approved?: string;
+  approvalRequested?: string;
+  page?: string;
+  limit?: string;
 }
 
 export async function create(
@@ -22,6 +23,8 @@ export async function create(
     numImages: numImages,
     approved: false,
     pinned: false,
+    approvalRequested: false,
+    notified: false,
     date: new Date()
   };
   await db.storePost(post);
@@ -38,11 +41,15 @@ export async function get(id: string): Promise<db.Post | null> {
 
 export async function getAll(query: PostsQuery = {}): Promise<db.Post[]> {
   return await db.getPosts(
-    query.approved !== undefined && query.approved.toString() === 'false' ?
-      false :
-      true,
-    query.page,
-    query.limit
+    query.approved !== undefined &&
+      query.approved.toLowerCase() === 'false' ?
+        false :
+        true,
+    query.approvalRequested !== undefined ?
+      query.approvalRequested.toLowerCase() === 'true' :
+      undefined,
+    query.page ? parseInt(query.page, 10) : undefined,
+    query.limit ? parseInt(query.limit, 10) : undefined
   );
 }
 
@@ -55,5 +62,13 @@ export async function setApproval(id: string, approval: boolean): Promise<boolea
 }
 
 export async function setPinned(id: string, pinned: boolean): Promise<boolean> {
-  return await db.setPinned(id, pinned);
+  return await db.setPostPinned(id, pinned);
+}
+
+export async function setNotified(id: string, notified: boolean): Promise<boolean> {
+  return await db.setPostNotified(id, notified);
+}
+
+export async function setApprovalRequested(id: string, requested: boolean): Promise<boolean> {
+  return await db.setPostApprovalRequested(id, requested);
 }

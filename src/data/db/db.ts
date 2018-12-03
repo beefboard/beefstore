@@ -10,6 +10,8 @@ export interface Post {
   approved: boolean;
   date: Date;
   pinned: boolean;
+  notified: boolean;
+  approvalRequested: boolean;
 }
 
 export const TABLE_POSTS = 'posts';
@@ -27,17 +29,19 @@ function convertUuid(id: string) {
   return Buffer.from(uuidParse.parse(id));
 }
 
-async function generatePostsTable() {
+export async function generatePostsTable() {
   if (!await db.schema.hasTable(TABLE_POSTS)) {
     await db.schema.createTable(TABLE_POSTS, (table) => {
-      table.binary('id');
-      table.string('author');
-      table.dateTime('date');
-      table.integer('numImages');
-      table.string('title');
-      table.string('content');
-      table.boolean('approved');
-      table.boolean('pinned');
+      table.binary('id').notNullable();
+      table.string('author').notNullable();
+      table.dateTime('date').notNullable();
+      table.integer('numImages').notNullable();
+      table.string('title').notNullable();
+      table.string('content', 50000).notNullable();
+      table.boolean('approved').notNullable();
+      table.boolean('pinned').notNullable();
+      table.boolean('notified').notNullable();
+      table.boolean('approvalRequested').notNullable();
     });
   }
 }
@@ -55,7 +59,8 @@ export async function initDb() {
   } else {
     db = knex({
       client: 'pg',
-      connection: pgConnectionConfig
+      connection: pgConnectionConfig,
+      pool: { min: 0, max: 10 }
     });
   }
   await generatePostsTable();
@@ -69,7 +74,10 @@ export async function storePost(post: Post) {
     content: post.content,
     approved: post.approved,
     date: post.date,
-    pinned: post.pinned
+    pinned: post.pinned,
+    numImages: post.numImages,
+    approvalRequested: post.approvalRequested,
+    notified: post.notified
   }).into(TABLE_POSTS);
 }
 
@@ -91,8 +99,20 @@ export async function getPost(id: string): Promise<Post | null> {
   return null;
 }
 
-export async function getPosts(approved: boolean, page?: number, limit: number = Infinity) {
-  const postsData = await db.select().from(TABLE_POSTS).where('approved', approved);
+export async function getPosts(
+  approved: boolean,
+  approvalRequested?: boolean,
+  page?: number,
+  limit: number = Infinity
+): Promise<Post[]> {
+  let query = db.select().from(TABLE_POSTS)
+    .where('approved', approved);
+
+  if (approvalRequested !== undefined) {
+    query = query.where('approvalRequested', approvalRequested);
+  }
+
+  const postsData = await query;
 
   for (const postData of postsData) {
     postData['id'] = uuidParse.unparse(postData['id']);
@@ -115,10 +135,28 @@ export async function setPostApproval(id: string, approved: boolean) {
   ) > 0;
 }
 
-export async function setPinned(id: string, pinned: boolean) {
+export async function setPostPinned(id: string, pinned: boolean) {
   return (
     await db
       .update({ pinned: pinned })
+      .table(TABLE_POSTS)
+      .where('id', convertUuid(id))
+  ) > 0;
+}
+
+export async function setPostApprovalRequested(id: string, requested: boolean) {
+  return (
+    await db
+      .update({ approvalRequested: requested })
+      .table(TABLE_POSTS)
+      .where('id', convertUuid(id))
+  ) > 0;
+}
+
+export async function setPostNotified(id: string, notified: boolean) {
+  return (
+    await db
+      .update({ notified: notified })
       .table(TABLE_POSTS)
       .where('id', convertUuid(id))
   ) > 0;
