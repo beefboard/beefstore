@@ -17,9 +17,15 @@ before_script:
 test:
   stage: test
   script:
-   - npm install
-   - npm run lint
    - npm test
+  artifacts:
+    paths:
+      - coverage/
+
+test:
+  stage: test
+  script:
+   - npm run lint
   artifacts:
     paths:
       - coverage/
